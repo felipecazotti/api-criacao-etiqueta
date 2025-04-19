@@ -66,6 +66,8 @@ public class LabelService
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         BorderWidth = 0,
                         //Padding = SAFETY_MARGIN
+                        PaddingRight = SAFETY_MARGIN,
+                        PaddingLeft = SAFETY_MARGIN,
                         UseAscender = true,
                         UseDescender = true
                     };
