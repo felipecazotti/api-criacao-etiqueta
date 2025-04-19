@@ -65,7 +65,9 @@ public class LabelService
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         VerticalAlignment = Element.ALIGN_MIDDLE,
                         BorderWidth = 0,
-                        Padding = SAFETY_MARGIN
+                        //Padding = SAFETY_MARGIN
+                        UseAscender = true,
+                        UseDescender = true
                     };
                     table.AddCell(cell);
 
