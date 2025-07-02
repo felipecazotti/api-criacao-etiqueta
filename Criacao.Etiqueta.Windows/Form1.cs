@@ -93,11 +93,28 @@ public partial class Form1 : Form
             Width = 100
         };
 
+        // ComboBox para seleção do modelo
+        var modelLabel = new Label
+        {
+            Text = "Modelo:",
+            Location = new Point(220, 140),
+            AutoSize = true
+        };
+
+        var modelComboBox = new ComboBox
+        {
+            Location = new Point(280, 137),
+            Width = 100,
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+        modelComboBox.Items.AddRange(new string[] { "A4251", "A4256" });
+        modelComboBox.SelectedIndex = 0;
+
         // Botão adicionar
         var addButton = new Button
         {
             Text = "Adicionar Etiqueta",
-            Location = new Point(210, 137),
+            Location = new Point(390, 137),
             Width = 150
         };
 
@@ -191,8 +208,7 @@ public partial class Form1 : Form
                 var index = dataGridView.SelectedRows[0].Index;
                 labels.RemoveAt(index);
                 UpdateDataGridView();
-                
-                // Atualiza o estado do botão após remover
+
                 if (dataGridView.Rows.Count > 0)
                 {
                     dataGridView.Rows[Math.Min(index, dataGridView.Rows.Count - 1)].Selected = true;
@@ -214,8 +230,16 @@ public partial class Form1 : Form
 
             try
             {
-                // Gerar PDF em memória
-                var pdfBytes = labelService.GenerateLabelsPdf(labels);
+                byte[] pdfBytes;
+                // Seleciona o método conforme o modelo escolhido
+                if (modelComboBox.SelectedItem?.ToString() == "A4251")
+                {
+                    pdfBytes = LabelService.GenerateLabelsPdfA4251(labels);
+                }
+                else
+                {
+                    pdfBytes = LabelService.GenerateLabelsPdfA4256(labels);
+                }
 
                 // Criar arquivo temporário
                 if (tempPdfPath != null && File.Exists(tempPdfPath))
@@ -224,7 +248,7 @@ public partial class Form1 : Form
                     {
                         File.Delete(tempPdfPath);
                     }
-                    catch { } // Ignora erros ao tentar deletar
+                    catch { }
                 }
 
                 tempPdfPath = Path.Combine(Path.GetTempPath(), $"etiquetas_{DateTime.Now:yyyyMMddHHmmss}.pdf");
@@ -242,7 +266,7 @@ public partial class Form1 : Form
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Não foi possível abrir o PDF: {ex.Message}", 
+                    MessageBox.Show($"Não foi possível abrir o PDF: {ex.Message}",
                         "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
@@ -253,7 +277,7 @@ public partial class Form1 : Form
         };
 
         // Adicionar controles
-        addGroup.Controls.AddRange(new Control[] { textLabel, textBox, quantityLabel, quantityBox, addButton });
+        addGroup.Controls.AddRange(new Control[] { textLabel, textBox, quantityLabel, quantityBox, modelLabel, modelComboBox, addButton });
         listGroup.Controls.AddRange(new Control[] { dataGridView, removeButton });
 
         var bottomPanel = new Panel { Dock = DockStyle.Fill };
