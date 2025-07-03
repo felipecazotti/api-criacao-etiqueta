@@ -110,8 +110,8 @@ public class LabelService
         const int LABELS_PER_PAGE_A4256 = 33; // 11 linhas × 3 colunas
         const float LABEL_WIDTH_A4256 = 63.5f / 10f * 28.35f; // 63,5 mm para pontos
         const float LABEL_HEIGHT_A4256 = 25.4f / 10f * 28.35f; // 25,4 mm para pontos
-        const float HORIZONTAL_MARGIN_A4256 = 7.5f / 10f * 28.35f; // 7,5 mm para pontos
-        const float VERTICAL_MARGIN_A4256 = 13.5f / 10f * 28.35f; // 13,5 mm para pontos
+        const float HORIZONTAL_MARGIN_A4256 = 9.75f / 10f * 28.35f; // 7,5 mm para pontos
+        const float VERTICAL_MARGIN_A4256 = 8.8f / 10f * 28.35f; // 13,5 mm para pontos
 
         using MemoryStream ms = new();
         Document document = new(PageSize.A4);
