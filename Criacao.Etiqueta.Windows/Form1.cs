@@ -1,3 +1,4 @@
+using Criacao.Etiqueta.Windows.AbstractServices;
 using Criacao.Etiqueta.Windows.Models;
 using Criacao.Etiqueta.Windows.Services;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ namespace Criacao.Etiqueta.Windows;
 public partial class Form1 : Form
 {
     private List<LabelInfo> labels = new();
-    private readonly LabelService labelService;
+    private readonly Dictionary<string, LabelAbstractService> dictLabelService;
     private DataGridView dataGridView;
     private TextBox textBox;
     private NumericUpDown quantityBox;
@@ -16,7 +17,11 @@ public partial class Form1 : Form
     public Form1()
     {
         InitializeComponent();
-        labelService = new LabelService();
+        dictLabelService = new Dictionary<string, LabelAbstractService>
+        {
+            { LabelAbstractService.A4251, new LabelServiceA4251() },
+            { LabelAbstractService.A4256, new LabelServiceA4256() }
+        };
         InitializeCustomComponents();
     }
 
@@ -230,18 +235,12 @@ public partial class Form1 : Form
 
             try
             {
-                byte[] pdfBytes;
-                // Seleciona o método conforme o modelo escolhido
-                if (modelComboBox.SelectedItem?.ToString() == "A4251")
+                byte[] pdfBytes = null;
+                if(dictLabelService.TryGetValue(modelComboBox.SelectedItem?.ToString(), out var labelService))
                 {
-                    pdfBytes = LabelService.GenerateLabelsPdfA4251(labels);
+                    pdfBytes = labelService.GenerateLabelsPdf(labels);
                 }
-                else
-                {
-                    pdfBytes = LabelService.GenerateLabelsPdfA4256(labels);
-                }
-
-                // Criar arquivo temporário
+                
                 if (tempPdfPath != null && File.Exists(tempPdfPath))
                 {
                     try
@@ -252,7 +251,9 @@ public partial class Form1 : Form
                 }
 
                 tempPdfPath = Path.Combine(Path.GetTempPath(), $"etiquetas_{DateTime.Now:yyyyMMddHHmmss}.pdf");
-                await File.WriteAllBytesAsync(tempPdfPath, pdfBytes);
+
+                if(pdfBytes is not null)
+                    await File.WriteAllBytesAsync(tempPdfPath, pdfBytes);
 
                 // Abrir o PDF
                 try
